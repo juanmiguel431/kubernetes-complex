@@ -48,7 +48,6 @@ services:
       - ./client/src:/usr/app/src
     environment:
       CHOKIDAR_USEPOLLING: true
-      WDS_SOCKET_PORT: 0
   worker:
     restart: always
     depends_on:
