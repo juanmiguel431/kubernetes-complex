@@ -1,0 +1,20 @@
+
+FROM mcr.microsoft.com/playwright:v1.49.1-noble
+
+USER root
+
+ENV VITEST_BROWSER_HEADLESS=true
+
+WORKDIR /usr/app
+
+COPY package*.json .
+
+RUN chown -R pwuser:pwuser /usr/app
+
+USER pwuser
+
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "run", "test:converage"]
