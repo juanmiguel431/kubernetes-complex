@@ -1,63 +1,30 @@
 services:
-  postgres:
-    restart: always
-    image: 'postgres:16.6-alpine'
-    environment:
-      POSTGRES_PASSWORD: postgres_password
-#    ports:
-#      - '5433:5432'
-  redis:
-    image: 'redis:latest'
-#    ports:
-#      - '6380:6379'
-  nginx:
-    restart: always
-    depends_on:
-      - api
-      - client
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
-    ports:
-      - '3050:80'
-  api:
-    restart: always
-    depends_on:
-      - postgres
-      - redis
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./server
-    volumes:
-      - ./server/src:/usr/app/src
-    environment:
-      CHOKIDAR_USEPOLLING: true
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      PGHOST: postgres
-      PGPORT: 5432
-      PGDATABASE: postgres
-      PGUSER: postgres
-      PGPASSWORD: postgres_password
   client:
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./client
-    volumes:
-      - ./client/src:/usr/app/src
+    image: juanmiguel431/multi-client
+    mem_limit: 128m
+    hostname: client
+  server:
+    image: juanmiguel431/multi-server
+    mem_limit: 128m
+    hostname: api
     environment:
-      CHOKIDAR_USEPOLLING: true
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PORT: $REDIS_PORT
+      PGHOST: $PGHOST
+      PGPORT: $PGPORT
+      PGDATABASE: $PGDATABASE
+      PGUSER: $PGUSER
+      PGPASSWORD: $PGPASSWORD
   worker:
-    restart: always
-    depends_on:
-      - postgres
-      - redis
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./worker
-    volumes:
-      - ./worker/src:/usr/app/src
+    image: juanmiguel431/multi-worker
+    mem_limit: 128m
+    hostname: worker
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PORT: $REDIS_PORT
+  nginx:
+    image: juanmiguel431/multi-nginx
+    mem_limit: 128m
+    hostname: nginx
+    ports:
+      - '80:80'
