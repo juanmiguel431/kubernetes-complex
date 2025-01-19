@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3001
+EXPOSE 5000
 
 #host allow other computers connect to this development server
 CMD ["npm", "run", "dev"]
