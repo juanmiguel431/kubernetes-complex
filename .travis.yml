@@ -1,0 +1,26 @@
+dist: jammy
+os: linux
+language: node_js
+node_js:
+  - 23
+services:
+  - docker
+
+before_install:
+  - docker build --progress=plain -t juanmiguel431/client-tests -f ./client/Dockerfile.test ./client
+
+script:
+  - docker run -e CI=true juanmiguel431/client-tests
+
+after_success:
+  - docker build -t juanmiguel431/multi-client ./client
+  - docker build -t juanmiguel431/multi-nginx ./nginx
+  - docker build -t juanmiguel431/multi-server ./server
+  - docker build -t juanmiguel431/multi-worker ./worker
+  # Log in to Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to Docker Hub
+  - docker push juanmiguel431/multi-client
+  - docker push juanmiguel431/multi-nginx
+  - docker push juanmiguel431/multi-server
+  - docker push juanmiguel431/multi-worker
