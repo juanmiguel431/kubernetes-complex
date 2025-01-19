@@ -4,7 +4,7 @@ WORKDIR /usr/app
 COPY package*.json .
 RUN npm install
 COPY . .
-RUN ppm run build
+RUN npm run build
 
 FROM nginx:1.27.3-alpine
 ENV NGINX_PORT=3000
