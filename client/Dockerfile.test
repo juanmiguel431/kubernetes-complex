@@ -17,4 +17,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "test:converage"]
+CMD ["npm", "run", "test:coverage"]
