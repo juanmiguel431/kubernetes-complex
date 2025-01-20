@@ -85,6 +85,6 @@ app.post('/api/values', async (req, res) => {
   res.send({ working: true });
 });
 
-app.listen(5000, () => {
+app.listen(5000, '0.0.0.0', () => {
   console.log('Express is listening in port 5000')
 });
