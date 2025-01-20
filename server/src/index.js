@@ -12,11 +12,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// console.log({ pgUser: keys.pgUser, pgPassword: keys.pgPassword, env: process.env.NODE_ENV, redisHost: keys.redisHost, redisPort: keys.redisPort });
-
+console.log({ pgUser: keys.pgUser, pgPassword: keys.pgPassword, env: process.env.NODE_ENV, redisHost: keys.redisHost, redisPort: keys.redisPort });
 
 // Postgres Client Setup
-const pgClient = new Pool({
+const pgPool = new Pool({
   host: keys.pgHost,
   port: keys.pgPort,
   database: keys.pgDatabase,
@@ -25,11 +24,11 @@ const pgClient = new Pool({
   ssl: process.env.NODE_ENV !== 'production' ? false : { rejectUnauthorized: false },
 });
 
-pgClient.on('error', () => {
+pgPool.on('error', () => {
   console.log('Lost PG connection');
 });
 
-pgClient.on('connect', (client) => {
+pgPool.on('connect', (client) => {
   client.query('CREATE TABLE IF NOT EXISTS values (number INT)')
     .catch(err => console.log(err));
 });
@@ -60,7 +59,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/values/all', async (req, res) => {
+
+  const pgClient = await pgPool.connect();
   const values = await pgClient.query('SELECT * FROM values');
+  await pgClient.release(true);
+
   res.send(values.rows);
 });
 
@@ -80,11 +83,13 @@ app.post('/api/values', async (req, res) => {
 
   await redisPublisher.publish('insert', index.toString());
 
-  pgClient.query('INSERT INTO values(number) values ($1)', [index]);
+  const pgClient = await pgPool.connect();
+  await pgClient.query('INSERT INTO values(number) values ($1)', [index]);
+  await pgClient.release(true);
 
   res.send({ working: true });
 });
 
-app.listen(5000, '0.0.0.0', () => {
+app.listen(5000, () => {
   console.log('Express is listening in port 5000')
 });
