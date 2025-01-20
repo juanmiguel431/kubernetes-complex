@@ -13,15 +13,16 @@ services:
   nginx:
     restart: always
     depends_on:
-      - api
+      - server
       - client
     build:
       dockerfile: Dockerfile.dev
       context: ./nginx
     ports:
       - '3050:80'
-  api:
+  server:
     restart: always
+    hostname: api
     depends_on:
       - postgres
       - redis
