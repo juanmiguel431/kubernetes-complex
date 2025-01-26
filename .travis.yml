@@ -4,6 +4,9 @@ env:
   global:
     - GIT_SHA=$(git rev-parse HEAD)
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+language: generic
+python:
+  - "3.8"
 before_install:
   - openssl aes-256-cbc -K $encrypted_3e2565127fdb_key -iv $encrypted_3e2565127fdb_iv -in multi-k8s-service-account.json.enc -out multi-k8s-service-account.json -d
   - curl https://sdk.cloud.google.com | bash > /dev/null;
@@ -24,4 +27,3 @@ deploy:
   script: bash ./deploy.sh
   on:
     branch: master
-
