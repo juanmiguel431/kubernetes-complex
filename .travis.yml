@@ -1,18 +1,13 @@
+dist: focal
+language: generic
 services:
   - docker
 env:
   global:
     - GIT_SHA=$(git rev-parse HEAD)
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-language: generic
 before_install:
   - openssl aes-256-cbc -K $encrypted_3e2565127fdb_key -iv $encrypted_3e2565127fdb_iv -in multi-k8s-service-account.json.enc -out multi-k8s-service-account.json -d
-  - sudo apt-get update
-  - sudo apt-get install -y software-properties-common
-  - sudo add-apt-repository -y ppa:deadsnakes/ppa
-  - sudo apt-get install -y python3.8 python3.8-distutils
-  - sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-  - python3 --version
   - curl https://sdk.cloud.google.com | bash > /dev/null;
   - source $HOME/google-cloud-sdk/path.bash.inc
   - gcloud components update kubectl
