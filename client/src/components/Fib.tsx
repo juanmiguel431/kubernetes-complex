@@ -52,6 +52,7 @@ const Fib = () => {
 
   return (
     <div>
+      <h2>Fibonacci Calculator - Kubernetes version</h2>
       <header>
         <Link to="/other-page">Other Page</Link>
       </header>
