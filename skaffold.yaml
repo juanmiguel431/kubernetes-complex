@@ -1,0 +1,60 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+deploy:
+  kubectl:
+    defaultNamespace: default
+    remoteManifests:
+      - ./k8s/*.yaml
+      - ./k8s-dev/*.yaml
+build:
+  local:
+    push: false
+  artifacts:
+    - image: juanmiguel431/multi-client
+      context: client
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+          - src: 'src/**/*.css'
+            dest: .
+          - src: 'src/**/*.html'
+            dest: .
+          - src: 'src/**/*.ts'
+            dest: .
+          - src: 'src/**/*.tsx'
+            dest: .
+    - image: juanmiguel431/multi-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+          - src: 'src/**/*.css'
+            dest: .
+          - src: 'src/**/*.html'
+            dest: .
+          - src: 'src/**/*.ts'
+            dest: .
+          - src: 'src/**/*.tsx'
+            dest: .
+    - image: juanmiguel431/multi-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+          - src: 'src/**/*.css'
+            dest: .
+          - src: 'src/**/*.html'
+            dest: .
+          - src: 'src/**/*.ts'
+            dest: .
+          - src: 'src/**/*.tsx'
+            dest: .
